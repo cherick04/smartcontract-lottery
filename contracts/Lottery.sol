@@ -38,7 +38,7 @@ contract Lottery is VRFConsumerBase, Ownable {
     }
 
     function enter() public payable {
-        require(lottery_state == LOTTERY_STATE.CLOSED);
+        require(lottery_state == LOTTERY_STATE.OPEN, "Lottery is closed!");
         // $50 minimum
         require(msg.value > getEntranceFee(), "Not enough ETH!");
         players.push(msg.sender);
