@@ -22,6 +22,7 @@ contract Lottery is VRFConsumerBase, Ownable {
     // From RandomNumberConsumer contract
     uint256 public fee;
     bytes32 public keyHash;
+    event RequestedRandomness(bytes32 requestId);
 
     constructor(
         address _priceFeedAddress,
@@ -40,7 +41,7 @@ contract Lottery is VRFConsumerBase, Ownable {
     function enter() public payable {
         require(lottery_state == LOTTERY_STATE.OPEN, "Lottery is closed!");
         // $50 minimum
-        require(msg.value > getEntranceFee(), "Not enough ETH!");
+        require(msg.value >= getEntranceFee(), "Not enough ETH!");
         players.push(msg.sender);
     }
 
@@ -77,6 +78,7 @@ contract Lottery is VRFConsumerBase, Ownable {
         ) % players.length; */
         lottery_state = LOTTERY_STATE.CALCULATING_WINNER;
         bytes32 requestId = requestRandomness(keyHash, fee);
+        emit RequestedRandomness(requestId);
     }
 
     function fulfillRandomness(bytes32 _requestId, uint256 _randomness)
